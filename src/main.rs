@@ -3,7 +3,7 @@ use std::env;
 use anyhow::Result;
 use sqlx::mysql::MySqlPool;
 
-use backend::model::Todo;
+use todo_app_backend::model::Todo;
 
 #[tokio::main]
 async fn main() -> Result<()> {
