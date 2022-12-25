@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  database:
+    build: ./db
+    container_name: todo-database
+    env_file:
+      - .env.dev
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-password}
+    ports:
+      - "3306:3306"
