@@ -11,14 +11,14 @@ jobs:
       - name: chekcout
         uses: actions/checkout@v2
       - name: setup docker-compose
-        run: docker compose -f compose-ci.yaml --env-file .env.dev up -d
+        run: docker compose -f docker-compose.ci.yaml --env-file .env.dev up -d
       - name: rust-toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: load env, then cargo build
         run: |
-          export $(cat .env.dev | grep -v ^# | xargs)
+          export $(cat .env.dev | grep -v '^#' | xargs)
           export DATABASE_URL="mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/sample"
           cargo build --release --all-features
       - name: cache build
