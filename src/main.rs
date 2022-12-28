@@ -2,6 +2,7 @@ use std::env;
 
 use anyhow::Result;
 use sqlx::mysql::MySqlPool;
+use sqlx::FromRow;
 
 use todo_app_backend::model::Todo;
 
@@ -9,14 +10,17 @@ use todo_app_backend::model::Todo;
 async fn main() -> Result<()> {
     let pool = MySqlPool::connect(&env::var("DATABASE_URL")?).await?;
     println!("fetching todos...");
-    let todos = sqlx::query_as!(
-        Todo,
+    sqlx::query("INSERT INTO `todos` (`title`, `due_to`) VALUES ('sample', '2023-01-01 12:34')")
+        .execute(&pool)
+        .await?;
+    let todos = sqlx::query(
         r"SELECT `id`, `title`, `note`, `due_to`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos`"
     )
     .fetch_all(&pool)
     .await?;
     println!("fetched {} todos.", todos.len());
     for todo in todos {
+        let todo = Todo::from_row(&todo)?;
         println!("{:?}", todo);
     }
     Ok(())
