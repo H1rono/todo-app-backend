@@ -5,14 +5,13 @@ name: on-push-CI
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 1
     steps:
       - name: chekcout
         uses: actions/checkout@v2
       - name: setup docker-compose
-        uses: yu-ichiro/spin-up-docker-compose-action@v1
-        with:
-          file: compose-ci.yaml
-          localhost: true
+        run: docker compose -f compose-ci.yaml --env-file .env.dev up -d
       - name: rust-toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -20,6 +19,7 @@ jobs:
       - name: load env, then cargo build
         run: |
           export $(cat .env.dev | grep -v ^# | xargs)
+          export DATABASE_URL="mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/sample"
           cargo build --release --all-features
       - name: cache build
         uses: actions/cache@v3
