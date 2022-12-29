@@ -1,0 +1,30 @@
+version: "3"
+
+tasks:
+  build:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose build
+      - cargo build
+
+  dev:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose --env-file .env.dev up -d
+
+  serve:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose --env-file .env up -d
+
+  ci-test:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose -f docker-compose.ci.yaml --env-file .env.dev up -d --wait
+      - CARGO_INCREMENTAL=1 cargo build --release --all-features
+      - docker compose down
+
+  down:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose down
