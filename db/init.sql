@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS `sample`;
-CREATE DATABASE `sample`;
+DROP DATABASE IF EXISTS `todo-app-database`;
+CREATE DATABASE `todo-app-database`;
 
-USE `sample`;
+USE `todo-app-database`;
 
 CREATE TABLE `todos` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
