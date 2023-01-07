@@ -26,7 +26,7 @@ impl Database {
     pub async fn connect(url: &str) -> Result<Self> {
         let pool = MySqlPool::connect(url)
             .await
-            .with_context(|| format!("an error occured while connecting to database {}", url))?;
+            .with_context(|| format!("Failed to connect database {}", url))?;
         Ok(Self { pool })
     }
 
@@ -34,7 +34,7 @@ impl Database {
         let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos`")
             .fetch_all(&self.pool)
             .await
-            .context("An error occured while executing SELECT query")?;
+            .context("Failed to execute SELECT query")?;
         let mut res = vec![];
         for todo in todos {
             let todo = Todo::from_row(&todo)
@@ -45,7 +45,7 @@ impl Database {
     }
 
     pub async fn fetch_todo_by_id(&self, id: u32) -> Result<Todo> {
-        let todo = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `id` == ? LIMIT 1")
+        let todo = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `id` = ? LIMIT 1")
             .bind(id)
             .fetch_one(&self.pool)
             .await
@@ -75,7 +75,7 @@ impl Database {
             .bind(deleted_at)
             .execute(&self.pool)
             .await
-            .with_context(|| format!("An error occured while INSERTing a todo {:?}", todo))?;
+            .with_context(|| format!("Failed to INSERT a todo {:?}", todo))?;
         Ok(())
     }
 
@@ -92,7 +92,12 @@ impl Database {
             .bind(note.clone())
             .execute(&self.pool)
             .await
-            .with_context(|| format!("An error occured while INSERTing a todo with title=`{}`, due_to=`{}`, note=`{}`", title, due_to.to_string(), note))?;
+            .with_context(|| {
+                format!(
+                    "Failed to INSERT a todo with title=`{}`, due_to=`{}`, note=`{}`",
+                    title, due_to, note
+                )
+            })?;
         Ok(())
     }
 }
