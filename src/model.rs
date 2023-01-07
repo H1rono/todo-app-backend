@@ -88,8 +88,8 @@ impl Database {
         let note = note.unwrap_or_default();
         sqlx::query("INSERT INTO `todos` (`title`, `note`, `due_to`) VALUES (?, ?, ?)")
             .bind(title.clone())
-            .bind(due_to)
             .bind(note.clone())
+            .bind(due_to)
             .execute(&self.pool)
             .await
             .with_context(|| {
