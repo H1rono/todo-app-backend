@@ -1,29 +1,23 @@
 use std::env;
 
 use anyhow::{Context, Result};
-use sqlx::mysql::MySqlPool;
-use sqlx::FromRow;
+use chrono::DateTime;
 
-use todo_app_backend::model::Todo;
+use todo_app_backend::model::Database;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let pool = MySqlPool::connect(&env::var("DATABASE_URL")?).await?;
-    println!("fetching todos...");
-    sqlx::query("INSERT INTO `todos` (`title`, `due_to`) VALUES ('sample', '2023-01-01 12:34')")
-        .execute(&pool)
-        .await
-        .context("An error occured while executing INSERT query.")?;
-    let todos = sqlx::query(
-        r"SELECT `id`, `title`, `note`, `due_to`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos`"
+    let url =
+        env::var("DATABASE_URL").context("Failed to get environment variable DATABASE_URL")?;
+    let db = Database::connect(&url).await?;
+    db.insert_partial_todo(
+        "sample".to_string(),
+        DateTime::parse_from_str("2023-06-01 12:34:00 +0000", "%Y-%m-%d %H:%M:%S %z")?.into(),
+        None,
     )
-    .fetch_all(&pool)
-    .await
-    .context("An error occured while executing SELECT query")?;
-    println!("fetched {} todos.", todos.len());
+    .await?;
+    let todos = db.fetch_all_todos().await?;
     for todo in todos {
-        let todo = Todo::from_row(&todo)
-            .with_context(|| format!("Failed to parse fetched row {:?}", todo))?;
         println!("{:?}", todo);
     }
     Ok(())
