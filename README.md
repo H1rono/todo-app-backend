@@ -14,6 +14,9 @@ server side implementation of my todo app
         - [`sqlx`](https://docs.rs/sqlx/latest/sqlx/)
         - [`futures`](https://docs.rs/futures/latest/futures/)
         - [`chrono`](https://docs.rs/chrono/latest/chrono/)
+        - [`axum`](https://docs.rs/axum/latest/axum/)
+        - [`hyper`](https://docs.rs/hyper/latest/hyper/)
+        - [`tower`](https://docs.rs/tower/latest/tower/)
 - [Taskfile](https://taskfile.dev/)
 
 ## tasks
