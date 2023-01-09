@@ -15,7 +15,7 @@ async fn main() -> Result<()> {
     let port: u16 = port
         .parse()
         .with_context(|| format!("Cannot parse \"{}\" as u16", port))?;
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
