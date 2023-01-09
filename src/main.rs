@@ -1,24 +1,24 @@
 use std::env;
+use std::net::SocketAddr;
 
 use anyhow::{Context, Result};
-use chrono::DateTime;
 
-use todo_app_backend::model::Database;
+use todo_app_backend::{model::Database, route::make_router};
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let url =
         env::var("DATABASE_URL").context("Failed to get environment variable DATABASE_URL")?;
     let db = Database::connect(&url).await?;
-    db.insert_partial_todo(
-        "sample".to_string(),
-        DateTime::parse_from_str("2023-06-01 12:34:00 +0000", "%Y-%m-%d %H:%M:%S %z")?.into(),
-        None,
-    )
-    .await?;
-    let todos = db.fetch_all_todos().await?;
-    for todo in todos {
-        println!("{:?}", todo);
-    }
+    let app = make_router(db);
+    let port = env::var("PORT").context("Failed to get environment variable PORT")?;
+    let port: u16 = port
+        .parse()
+        .with_context(|| format!("Cannot parse \"{}\" as u16", port))?;
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .context("Something went wrong while serving")?;
     Ok(())
 }
