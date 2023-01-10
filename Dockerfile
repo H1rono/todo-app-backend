@@ -11,4 +11,4 @@ RUN apt-get update && apt-get install -y wget \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-ENTRYPOINT dockerize -wait tcp://todo-database:3306 todo-app-backend
+CMD [ "dockerize", "-wait", "tcp://todo-database:3306", "todo-app-backend" ]
