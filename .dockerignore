@@ -1,6 +1,8 @@
 .git*
 target
 db
+.env*
 .dockerignore
 docker-compose.yaml
+docker-compose.ci.yaml
 Dockerfile
