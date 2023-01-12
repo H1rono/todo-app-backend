@@ -21,7 +21,7 @@ server side implementation of my todo app
 
 ## tasks
 
-see [`Taskfile.yaml`](https://github.com/H1rono/todo-app-backend/blob/main/Taskfile.yaml)
+see [`Taskfile.yml`](https://github.com/H1rono/todo-app-backend/blob/main/Taskfile.yml)
 
 - build: `task build`
 - development: `task dev`

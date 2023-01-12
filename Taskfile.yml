@@ -20,7 +20,7 @@ tasks:
   ci-test:
     dir: "{{.TASKFILE_DIR}}"
     cmds:
-      - docker compose -f docker-compose.ci.yaml --env-file .env.dev up -d --wait
+      - docker compose -f docker-compose.ci.yml --env-file .env.dev up -d --wait
       - CARGO_INCREMENTAL=1 cargo build --release --all-features
       - docker compose down
 
