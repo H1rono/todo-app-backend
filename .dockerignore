@@ -4,5 +4,5 @@ db
 .env*
 .dockerignore
 docker-compose.yml
-docker-compose.ci.yml
+docker-compose.sub.yml
 Dockerfile
