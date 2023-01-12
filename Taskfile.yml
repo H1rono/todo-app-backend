@@ -22,6 +22,11 @@ tasks:
     cmds:
       - docker compose --env-file .env up -d
 
+  serve-db:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose -f docker-compose.sub.yml --env-file .env up -d
+
   ci-test:
     dir: "{{.TASKFILE_DIR}}"
     cmds:
