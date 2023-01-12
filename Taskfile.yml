@@ -12,6 +12,11 @@ tasks:
     cmds:
       - docker compose --env-file .env.dev up -d
 
+  dev-db:
+    dir: "{{.TASKFILE_DIR}}"
+    cmds:
+      - docker compose -f docker-compose.sub.yml --env-file .env.dev up -d --wait
+
   serve:
     dir: "{{.TASKFILE_DIR}}"
     cmds:
