@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use sqlx::{
     types::chrono::{DateTime, Utc},
-    FromRow, MySqlPool,
+    MySqlPool,
 };
 
 mod delete;
