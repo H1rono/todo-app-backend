@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
 use sqlx::{
     types::chrono::{DateTime, Utc},
     MySqlPool,
@@ -20,6 +21,14 @@ pub struct Todo {
     pub created_at: TimeStamp,
     pub updated_at: TimeStamp,
     pub deleted_at: Option<TimeStamp>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PartialTodo {
+    pub title: String,
+    pub note: String,
+    pub due_to: TimeStamp,
+    pub done: bool,
 }
 
 pub struct Database {

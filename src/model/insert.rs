@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 
-use super::{Database, TimeStamp, Todo};
+use super::{Database, PartialTodo, Todo};
 
 fn try_cvt(n: u64) -> Result<u32> {
     let res = n
@@ -20,7 +20,7 @@ impl Database {
             created_at,
             updated_at,
             deleted_at,
-        } = todo.clone();
+        } = &todo;
         let id = sqlx::query(
             "INSERT INTO `todos` (`id`, `title`, `note`, `due_to`, `done`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         )
@@ -39,29 +39,23 @@ impl Database {
         try_cvt(id)
     }
 
-    pub async fn insert_partial_todo(
-        &self,
-        title: &str,
-        due_to: TimeStamp,
-        note: Option<&str>,
-        done: bool,
-    ) -> Result<u32> {
-        let note = note.unwrap_or_default();
+    pub async fn insert_partial_todo(&self, todo: PartialTodo) -> Result<u32> {
+        let PartialTodo {
+            title,
+            due_to,
+            note,
+            done,
+        } = &todo;
         let id = sqlx::query(
             "INSERT INTO `todos` (`title`, `note`, `due_to`, `done`) VALUES (?, ?, ?, ?)",
         )
         .bind(title)
         .bind(note)
         .bind(due_to)
-        .bind(done as i8)
+        .bind(*done as i8)
         .execute(&self.pool)
         .await
-        .with_context(|| {
-            format!(
-                "Failed to INSERT a todo with title=`{}`, due_to=`{}`, note=`{}`, done={}",
-                title, due_to, note, done
-            )
-        })?
+        .with_context(|| format!("Failed to INSERT a todo with {:?}", todo))?
         .last_insert_id();
         try_cvt(id)
     }
