@@ -40,12 +40,63 @@ impl Database {
         Ok(todos)
     }
 
+    pub async fn fetch_todos_by_title(&self, title: &str) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `title` = ?")
+            .bind(title)
+            .fetch_all(&self.pool)
+            .await
+            .with_context(|| format!("Failed to SELECT todos by title {}", title))?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
+    }
+
+    pub async fn fetch_todos_like_descr(&self, descr: &str) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `descr` LIKE ?")
+            .bind(descr)
+            .fetch_all(&self.pool)
+            .await
+            .with_context(|| format!("Failed to SELECT todos where its description like {}", descr))?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
+    }
+
+    pub async fn fetch_todos_by_descr(&self, descr: &str) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `title` = ?")
+            .bind(descr)
+            .fetch_all(&self.pool)
+            .await
+            .with_context(|| format!("Failed to SELECT todos by description {}", descr))?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
+    }
+
     pub async fn fetch_todos_by_done(&self, done: bool) -> Result<Vec<Todo>> {
         let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `done` = ?")
             .bind(done as i8)
             .fetch_all(&self.pool)
             .await
             .with_context(|| format!("Failed to SELECT todos where its done = {}", done))?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
+    }
+
+    pub async fn fetch_todos_by_deleted(&self, deleted: bool) -> Result<Vec<Todo>> {
+        let query = format!(
+            "SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `deleted_at` IS {}",
+            if deleted { "NOT NULL" } else { "NULL" }
+        );
+        let todos = sqlx::query(&query)
+            .fetch_all(&self.pool)
+            .await
+            .with_context(|| format!("Failed to SELECT todos where deleted = {}", deleted))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
