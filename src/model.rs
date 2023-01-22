@@ -66,6 +66,18 @@ impl Database {
         Ok(todos)
     }
 
+    pub async fn fetch_todos_by_done(&self, done: bool) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `done` = ?")
+            .bind(done as i8)
+            .fetch_all(&self.pool)
+            .await
+            .with_context(|| format!("Failed to SELECT todos where its done = {}", done))?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
+    }
+
     pub async fn insert_todo(&self, todo: Todo) -> Result<()> {
         let Todo {
             id,
@@ -94,14 +106,14 @@ impl Database {
 
     pub async fn insert_partial_todo(
         &self,
-        title: String,
+        title: &str,
         due_to: TimeStamp,
-        note: Option<String>,
+        note: Option<&str>,
     ) -> Result<()> {
         let note = note.unwrap_or_default();
         sqlx::query("INSERT INTO `todos` (`title`, `note`, `due_to`) VALUES (?, ?, ?)")
-            .bind(title.clone())
-            .bind(note.clone())
+            .bind(title)
+            .bind(note)
             .bind(due_to)
             .execute(&self.pool)
             .await
