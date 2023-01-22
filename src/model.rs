@@ -18,6 +18,10 @@ pub struct Todo {
     pub deleted_at: Option<TimeStamp>,
 }
 
+fn todo_from_row(todo: sqlx::mysql::MySqlRow) -> Result<Todo> {
+    Todo::from_row(&todo).with_context(|| format!("Failed to parse fetched row {:?}", todo))
+}
+
 pub struct Database {
     pool: MySqlPool,
 }
@@ -34,14 +38,11 @@ impl Database {
         let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos`")
             .fetch_all(&self.pool)
             .await
-            .context("Failed to execute SELECT query")?;
-        let mut res = vec![];
-        for todo in todos {
-            let todo = Todo::from_row(&todo)
-                .with_context(|| format!("Failed to parse fetched row {:?}", todo))?;
-            res.push(todo);
-        }
-        Ok(res)
+            .context("Failed to execute SELECT query")?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
     }
 
     pub async fn fetch_todo_by_id(&self, id: u32) -> Result<Todo> {
@@ -50,7 +51,7 @@ impl Database {
             .fetch_one(&self.pool)
             .await
             .with_context(|| format!("Failed to fetch a todo by id {}", id))?;
-        Todo::from_row(&todo).with_context(|| format!("Failed to parse fetched row {:?}", todo))
+        todo_from_row(todo)
     }
 
     pub async fn fetch_todos_like_title(&self, title: &str) -> Result<Vec<Todo>> {
@@ -60,9 +61,7 @@ impl Database {
             .await
             .with_context(|| format!("Failed to SELECT todos where its title like {}", title))?
             .into_iter()
-            .map(|t| {
-                Todo::from_row(&t).with_context(|| format!("Failed to parse fetched row {:?}", t))
-            })
+            .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
         Ok(todos)
     }
