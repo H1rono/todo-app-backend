@@ -53,6 +53,20 @@ impl Database {
         Todo::from_row(&todo).with_context(|| format!("Failed to parse fetched row {:?}", todo))
     }
 
+    pub async fn fetch_todos_like_title(&self, title: &str) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `title` LIKE ?")
+            .bind(title)
+            .fetch_all(&self.pool)
+            .await
+            .with_context(|| format!("Failed to SELECT todos where its title like {}", title))?
+            .into_iter()
+            .map(|t| {
+                Todo::from_row(&t).with_context(|| format!("Failed to parse fetched row {:?}", t))
+            })
+            .collect::<Result<Vec<Todo>>>()?;
+        Ok(todos)
+    }
+
     pub async fn insert_todo(&self, todo: Todo) -> Result<()> {
         let Todo {
             id,
@@ -98,6 +112,15 @@ impl Database {
                     title, due_to, note
                 )
             })?;
+        Ok(())
+    }
+
+    pub async fn delete_todo(&self, id: u32) -> Result<()> {
+        sqlx::query("DELETE FROM `todos` WHERE `id` = ?")
+            .bind(id)
+            .execute(&self.pool)
+            .await
+            .with_context(|| format!("Failed to DELETE todo where id={}", id))?;
         Ok(())
     }
 }
