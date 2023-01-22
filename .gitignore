@@ -1,1 +1,7 @@
 /target
+
+.*
+!.env.dev
+!.dockerignore
+!.github
+!.gitignore
