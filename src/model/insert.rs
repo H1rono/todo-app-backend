@@ -10,7 +10,7 @@ fn try_cvt(n: u64) -> Result<u32> {
 }
 
 impl Database {
-    pub async fn insert_todo(&self, todo: Todo) -> Result<u32> {
+    pub async fn insert_todo(&self, todo: &Todo) -> Result<u32> {
         let Todo {
             id,
             title,
@@ -20,7 +20,7 @@ impl Database {
             created_at,
             updated_at,
             deleted_at,
-        } = &todo;
+        } = todo;
         let id = sqlx::query(
             "INSERT INTO `todos` (`id`, `title`, `note`, `due_to`, `done`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         )
@@ -39,13 +39,13 @@ impl Database {
         try_cvt(id)
     }
 
-    pub async fn insert_partial_todo(&self, todo: PartialTodo) -> Result<u32> {
+    pub async fn insert_partial_todo(&self, todo: &PartialTodo) -> Result<u32> {
         let PartialTodo {
             title,
             due_to,
             note,
             done,
-        } = &todo;
+        } = todo;
         let id = sqlx::query(
             "INSERT INTO `todos` (`title`, `note`, `due_to`, `done`) VALUES (?, ?, ?, ?)",
         )
