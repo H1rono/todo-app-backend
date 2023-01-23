@@ -17,6 +17,8 @@ server side implementation of my todo app
         - [`axum`](https://docs.rs/axum/latest/axum/)
         - [`hyper`](https://docs.rs/hyper/latest/hyper/)
         - [`tower`](https://docs.rs/tower/latest/tower/)
+        - [`serde`](https://docs.rs/serde/latest/serde/)
+        - [`serde_json`](https://docs.rs/serde_json/latest/serde_json/)
 - [Taskfile](https://taskfile.dev/)
 
 ## tasks
