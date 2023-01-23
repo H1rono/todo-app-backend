@@ -1,9 +1,9 @@
-DROP DATABASE IF EXISTS `todo-app-database`;
-CREATE DATABASE `todo-app-database`;
+-- DROP DATABASE IF EXISTS `todo-app-database`;
+CREATE DATABASE IF NOT EXISTS `todo-app-database`;
 
 USE `todo-app-database`;
 
-CREATE TABLE `todos` (
+CREATE TABLE IF NOT EXISTS `todos` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `title` VARCHAR(255) NOT NULL,
     `note` VARCHAR(255) NOT NULL DEFAULT '',

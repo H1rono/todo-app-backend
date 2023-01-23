@@ -6,7 +6,10 @@ services:
     image: todo-database
     container_name: todo-database
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     expose:
       - 3306
   app-backend:
@@ -14,7 +17,7 @@ services:
     image: todo-app-backend
     container_name: todo-app-backend
     environment:
-      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD:-password}@todo-database:3306/todo-app-database
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@todo-database:3306/${MYSQL_DATABASE}
       - PORT=${PORT:-3000}
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
