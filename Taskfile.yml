@@ -32,7 +32,7 @@ tasks:
     cmds:
       - docker compose -f docker-compose.sub.yml --env-file .env.dev up -d --wait
       - CARGO_INCREMENTAL=1 cargo build --release --all-features
-      - docker compose down
+      - docker compose -f docker-compose.sub.yml --env-file .env.dev down
 
   down-dev:
     dir: "{{.TASKFILE_DIR}}"
