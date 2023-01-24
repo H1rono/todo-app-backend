@@ -1,4 +1,3 @@
--- DROP DATABASE IF EXISTS `todo-app-database`;
 CREATE DATABASE IF NOT EXISTS `todo-app-database`;
 
 USE `todo-app-database`;
