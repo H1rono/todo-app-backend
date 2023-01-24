@@ -5,9 +5,9 @@ server side implementation of my todo app
 ## dependencies
 
 - MariaDB
-    - runs on Docker
+    - runs in Docker
 - Rust
-    - runs on both Docker and host machine
+    - runs in both Docker and host machine
     - cargo
         - [`anyhow`](https://docs.rs/anyhow/latest/anyhow/)
         - [`tokio`](https://docs.rs/tokio/latest/tokio/)
@@ -32,4 +32,4 @@ see [`Taskfile.yml`](https://github.com/H1rono/todo-app-backend/blob/main/Taskfi
 - (maybe) production only MariaDB: `task serve-db`
 - test ci: `task ci-test`
 - docker compose down: `task down`
-- docker compose --env-file down: `task down-dev`
+- docker compose --env-file .env.dev down: `task down-dev`
