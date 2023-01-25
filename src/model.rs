@@ -8,6 +8,7 @@ use sqlx::{
 mod delete;
 mod fetch;
 mod insert;
+mod update;
 
 pub type TimeStamp = DateTime<Utc>;
 
