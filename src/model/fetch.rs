@@ -52,24 +52,24 @@ impl Database {
         Ok(todos)
     }
 
-    pub async fn fetch_todos_like_descr(&self, descr: &str) -> Result<Vec<Todo>> {
-        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `descr` LIKE ?")
-            .bind(descr)
+    pub async fn fetch_todos_like_note(&self, note: &str) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `note` LIKE ?")
+            .bind(note)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos where its description like {}", descr))?
+            .with_context(|| format!("Failed to SELECT todos where its note like {}", note))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
         Ok(todos)
     }
 
-    pub async fn fetch_todos_by_descr(&self, descr: &str) -> Result<Vec<Todo>> {
-        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `title` = ?")
-            .bind(descr)
+    pub async fn fetch_todos_by_note(&self, note: &str) -> Result<Vec<Todo>> {
+        let todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `note` = ?")
+            .bind(note)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos by description {}", descr))?
+            .with_context(|| format!("Failed to SELECT todos by noteiption {}", note))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
