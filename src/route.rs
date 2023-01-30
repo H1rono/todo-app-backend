@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::{routing, Router};
 
 use crate::model::Database;
@@ -7,5 +9,7 @@ pub async fn index() -> String {
 }
 
 pub fn make_router(db: Database) -> Router {
-    Router::new().route("/", routing::get(index))
+    Router::new()
+        .route("/", routing::get(index))
+        .with_state(Arc::new(db))
 }
