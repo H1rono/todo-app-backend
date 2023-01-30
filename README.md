@@ -30,6 +30,7 @@ see [`Taskfile.yml`](https://github.com/H1rono/todo-app-backend/blob/main/Taskfi
 - development only MariaDB: `task dev-db`
 - (maybe) production: `task serve`
 - (maybe) production only MariaDB: `task serve-db`
-- test ci: `task ci-test`
+- ci of DB: `task ci-test`
+- ci of cargo: `task ci-cargo`
 - docker compose down: `task down`
 - docker compose --env-file .env.dev down: `task down-dev`
