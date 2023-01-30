@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use sqlx::{
     types::chrono::{DateTime, Utc},
@@ -44,3 +44,20 @@ impl Database {
         Ok(Self { pool })
     }
 }
+
+#[derive(Debug)]
+pub enum DBError {
+    RowNotFound(u32),
+    MySqlError(anyhow::Error),
+}
+
+impl<E> From<E> for DBError
+where
+    E: Into<anyhow::Error>,
+{
+    fn from(value: E) -> Self {
+        DBError::MySqlError(value.into())
+    }
+}
+
+pub type Result<T, E = DBError> = anyhow::Result<T, E>;

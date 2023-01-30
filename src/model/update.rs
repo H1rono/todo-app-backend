@@ -1,6 +1,6 @@
-use anyhow::{Context, Result};
+use anyhow::Context;
 
-use super::{Database, TimeStamp};
+use super::{Database, Result, TimeStamp};
 
 impl Database {
     pub async fn update_todo_col_title(&self, id: u32, value: &str) -> Result<()> {

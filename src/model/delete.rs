@@ -1,6 +1,6 @@
-use anyhow::{Context, Result};
+use anyhow::Context;
 
-use super::Database;
+use super::{Database, Result};
 
 impl Database {
     pub async fn delete_todo(&self, id: u32) -> Result<()> {

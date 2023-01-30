@@ -1,10 +1,12 @@
-use anyhow::{Context, Result};
+use anyhow::Context;
 use sqlx::FromRow;
 
-use super::{Database, Todo};
+use super::{Database, Result, Todo};
 
 fn todo_from_row(todo: sqlx::mysql::MySqlRow) -> Result<Todo> {
-    Todo::from_row(&todo).with_context(|| format!("Failed to parse fetched row {:?}", todo))
+    let ctx = || format!("Failed to parse fetched row {:?}", todo);
+    let res = Todo::from_row(&todo).with_context(ctx)?;
+    Ok(res)
 }
 
 impl Database {

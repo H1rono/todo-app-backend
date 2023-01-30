@@ -1,6 +1,6 @@
-use anyhow::{Context, Result};
+use anyhow::Context;
 
-use super::{Database, PartialTodo, Todo};
+use super::{Database, PartialTodo, Result, Todo};
 
 fn try_cvt(n: u64) -> Result<u32> {
     let res = n
