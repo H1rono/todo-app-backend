@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     let port = env::var("PORT").context("Failed to get environment variable PORT")?;
     let port: u16 = port
         .parse()
-        .with_context(|| format!("Cannot parse \"{}\" as u16", port))?;
+        .with_context(|| format!("Cannot parse \"{port}\" as u16"))?;
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     axum::Server::bind(&addr)
         .serve(app.into_make_service())

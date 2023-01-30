@@ -11,10 +11,7 @@ impl Database {
             .execute(&self.pool)
             .await
             .with_context(|| {
-                format!(
-                    "Failed to UPDATE a row where id = {} with title = {}",
-                    id, value
-                )
+                format!("Failed to UPDATE a row where id = {id} with title = {value}")
             })?;
         todo.title = String::from(value);
         Ok(todo)
@@ -28,10 +25,7 @@ impl Database {
             .execute(&self.pool)
             .await
             .with_context(|| {
-                format!(
-                    "Failed to UPDATE a row where id = {} with note = {}",
-                    id, value
-                )
+                format!("Failed to UPDATE a row where id = {id} with note = {value}")
             })?;
         todo.note = String::from(value);
         Ok(todo)
@@ -45,10 +39,7 @@ impl Database {
             .execute(&self.pool)
             .await
             .with_context(|| {
-                format!(
-                    "Failed to UPDATE a row where id = {} with due_to = {}",
-                    id, value
-                )
+                format!("Failed to UPDATE a row where id = {id} with due_to = {value}")
             })?;
         todo.due_to = value;
         Ok(todo)
@@ -62,10 +53,7 @@ impl Database {
             .execute(&self.pool)
             .await
             .with_context(|| {
-                format!(
-                    "Failed to UPDATE a row where id = {} with done = {}",
-                    id, value
-                )
+                format!("Failed to UPDATE a row where id = {id} with done = {value}")
             })?;
         todo.done = value as i8;
         Ok(todo)
@@ -75,16 +63,13 @@ impl Database {
     pub async fn update_todo_col_delete(&self, id: u32, value: bool) -> Result<Todo> {
         let _ = self.fetch_todo_by_id(id).await?;
         let value = if value { "CURRENT_TIMESTAMP" } else { "NULL" };
-        let query = format!("UPDATE `todos` SET `deleted_at` = {} WHERE `id` = ?", value);
+        let query = format!("UPDATE `todos` SET `deleted_at` = {value} WHERE `id` = ?");
         sqlx::query(&query)
             .bind(id)
             .execute(&self.pool)
             .await
             .with_context(|| {
-                format!(
-                    "Failed to UPDATE a row where id = {} with deleted_at = {}",
-                    id, value
-                )
+                format!("Failed to UPDATE a row where id = {id} with deleted_at = {value}")
             })?;
         self.fetch_todo_by_id(id).await
     }

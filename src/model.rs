@@ -40,7 +40,7 @@ impl Database {
     pub async fn connect(url: &str) -> anyhow::Result<Self> {
         let pool = MySqlPool::connect(url)
             .await
-            .with_context(|| format!("Failed to connect database {}", url))?;
+            .with_context(|| format!("Failed to connect database {url}"))?;
         Ok(Self { pool })
     }
 }

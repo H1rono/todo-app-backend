@@ -4,7 +4,7 @@ use sqlx::FromRow;
 use super::{DBError, Database, Result, Todo};
 
 fn todo_from_row(todo: sqlx::mysql::MySqlRow) -> Result<Todo> {
-    let ctx = || format!("Failed to parse fetched row {:?}", todo);
+    let ctx = || format!("Failed to parse fetched row {todo:?}");
     let res = Todo::from_row(&todo).with_context(ctx)?;
     Ok(res)
 }
@@ -26,7 +26,7 @@ impl Database {
             .bind(id)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to fetch a todo by id {}", id))?
+            .with_context(|| format!("Failed to fetch a todo by id {id}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
@@ -41,7 +41,7 @@ impl Database {
             .bind(title)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos where its title like {}", title))?
+            .with_context(|| format!("Failed to SELECT todos where its title like {title}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
@@ -53,7 +53,7 @@ impl Database {
             .bind(title)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos by title {}", title))?
+            .with_context(|| format!("Failed to SELECT todos by title {title}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
@@ -65,7 +65,7 @@ impl Database {
             .bind(note)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos where its note like {}", note))?
+            .with_context(|| format!("Failed to SELECT todos where its note like {note}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
@@ -77,7 +77,7 @@ impl Database {
             .bind(note)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos by noteiption {}", note))?
+            .with_context(|| format!("Failed to SELECT todos by noteiption {note}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
@@ -89,7 +89,7 @@ impl Database {
             .bind(done as i8)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos where its done = {}", done))?
+            .with_context(|| format!("Failed to SELECT todos where its done = {done}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;
@@ -104,7 +104,7 @@ impl Database {
         let todos = sqlx::query(&query)
             .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to SELECT todos where deleted = {}", deleted))?
+            .with_context(|| format!("Failed to SELECT todos where deleted = {deleted}"))?
             .into_iter()
             .map(todo_from_row)
             .collect::<Result<Vec<Todo>>>()?;

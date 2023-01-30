@@ -9,7 +9,7 @@ impl Database {
             .bind(id)
             .execute(&self.pool)
             .await
-            .with_context(|| format!("Failed to DELETE todo where id={}", id))?;
+            .with_context(|| format!("Failed to DELETE todo where id={id}"))?;
         Ok(todo)
     }
 }

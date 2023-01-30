@@ -5,7 +5,7 @@ use super::{Database, PartialTodo, Result, Todo};
 fn try_cvt(n: u64) -> Result<u32> {
     let res = n
         .try_into()
-        .with_context(|| format!("Failed to convert {} into u32", n))?;
+        .with_context(|| format!("Failed to convert {n} into u32"))?;
     Ok(res)
 }
 
@@ -34,7 +34,7 @@ impl Database {
         .bind(deleted_at)
         .execute(&self.pool)
         .await
-        .with_context(|| format!("Failed to INSERT a todo {:?}", todo))?
+        .with_context(|| format!("Failed to INSERT a todo {todo:?}"))?
         .last_insert_id();
         try_cvt(id)
     }
@@ -55,7 +55,7 @@ impl Database {
         .bind(*done as i8)
         .execute(&self.pool)
         .await
-        .with_context(|| format!("Failed to INSERT a todo with {:?}", todo))?
+        .with_context(|| format!("Failed to INSERT a todo with {todo:?}"))?
         .last_insert_id();
         try_cvt(id)
     }
