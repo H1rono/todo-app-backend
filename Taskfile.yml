@@ -36,7 +36,7 @@ tasks:
   ci-cargo:
     dir: "{{.TASKFILE_DIR}}"
     cmds:
-      - CARGO_INCREMENTAL=1 cargo build --release --all-feature
+      - CARGO_INCREMENTAL=1 cargo build --release --all-features
       - cargo fmt --all -- --check
       - cargo clippy --all-targets --all-features -- -D warnings
 
