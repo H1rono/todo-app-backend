@@ -13,6 +13,8 @@ jobs:
   rust_check:
     runs-on: ubuntu-latest
     steps:
+      - name: chekcout
+        uses: actions/checkout@v3
       - name: cache build
         uses: actions/cache@v3
         with:
