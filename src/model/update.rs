@@ -1,9 +1,10 @@
 use anyhow::Context;
 
-use super::{Database, Result, TimeStamp};
+use super::{Database, Result, TimeStamp, Todo};
 
 impl Database {
-    pub async fn update_todo_col_title(&self, id: u32, value: &str) -> Result<()> {
+    pub async fn update_todo_col_title(&self, id: u32, value: &str) -> Result<Todo> {
+        let mut todo = self.fetch_todo_by_id(id).await?;
         sqlx::query("UPDATE `todos` SET `title` = ? WHERE `id` = ?")
             .bind(value)
             .bind(id)
@@ -15,10 +16,12 @@ impl Database {
                     id, value
                 )
             })?;
-        Ok(())
+        todo.title = String::from(value);
+        Ok(todo)
     }
 
-    pub async fn update_todo_col_note(&self, id: u32, value: &str) -> Result<()> {
+    pub async fn update_todo_col_note(&self, id: u32, value: &str) -> Result<Todo> {
+        let mut todo = self.fetch_todo_by_id(id).await?;
         sqlx::query("UPDATE `todos` SET `note` = ? WHERE `id` = ?")
             .bind(value)
             .bind(id)
@@ -30,10 +33,12 @@ impl Database {
                     id, value
                 )
             })?;
-        Ok(())
+        todo.note = String::from(value);
+        Ok(todo)
     }
 
-    pub async fn update_todo_col_due(&self, id: u32, value: TimeStamp) -> Result<()> {
+    pub async fn update_todo_col_due(&self, id: u32, value: TimeStamp) -> Result<Todo> {
+        let mut todo = self.fetch_todo_by_id(id).await?;
         sqlx::query("UPDATE `todos` SET `due_to` = ? WHERE `id` = ?")
             .bind(value)
             .bind(id)
@@ -45,10 +50,12 @@ impl Database {
                     id, value
                 )
             })?;
-        Ok(())
+        todo.due_to = value;
+        Ok(todo)
     }
 
-    pub async fn update_todo_col_done(&self, id: u32, value: bool) -> Result<()> {
+    pub async fn update_todo_col_done(&self, id: u32, value: bool) -> Result<Todo> {
+        let mut todo = self.fetch_todo_by_id(id).await?;
         sqlx::query("UPDATE `todos` SET `done` = ? WHERE `id` = ?")
             .bind(value as i8)
             .bind(id)
@@ -60,11 +67,13 @@ impl Database {
                     id, value
                 )
             })?;
-        Ok(())
+        todo.done = value as i8;
+        Ok(todo)
     }
 
     // value: true => SET deleted_at = current_timestamp, false => SET deleted_at = NULL
-    pub async fn update_todo_col_delete(&self, id: u32, value: bool) -> Result<()> {
+    pub async fn update_todo_col_delete(&self, id: u32, value: bool) -> Result<Todo> {
+        let _ = self.fetch_todo_by_id(id).await?;
         let value = if value { "CURRENT_TIMESTAMP" } else { "NULL" };
         let query = format!("UPDATE `todos` SET `deleted_at` = {} WHERE `id` = ?", value);
         sqlx::query(&query)
@@ -77,6 +86,6 @@ impl Database {
                     id, value
                 )
             })?;
-        Ok(())
+        self.fetch_todo_by_id(id).await
     }
 }

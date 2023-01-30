@@ -1,7 +1,7 @@
 use anyhow::Context;
 use sqlx::FromRow;
 
-use super::{Database, Result, Todo};
+use super::{DBError, Database, Result, Todo};
 
 fn todo_from_row(todo: sqlx::mysql::MySqlRow) -> Result<Todo> {
     let ctx = || format!("Failed to parse fetched row {:?}", todo);
@@ -22,12 +22,18 @@ impl Database {
     }
 
     pub async fn fetch_todo_by_id(&self, id: u32) -> Result<Todo> {
-        let todo = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `id` = ? LIMIT 1")
+        let mut todos = sqlx::query("SELECT `id`, `title`, `note`, `due_to`, `created_at`, `done`, `created_at`, `updated_at`, `deleted_at` FROM `todos` WHERE `id` = ? LIMIT 1")
             .bind(id)
-            .fetch_one(&self.pool)
+            .fetch_all(&self.pool)
             .await
-            .with_context(|| format!("Failed to fetch a todo by id {}", id))?;
-        todo_from_row(todo)
+            .with_context(|| format!("Failed to fetch a todo by id {}", id))?
+            .into_iter()
+            .map(todo_from_row)
+            .collect::<Result<Vec<Todo>>>()?;
+        match todos.pop() {
+            Some(todo) => Ok(todo),
+            None => Err(DBError::RowNotFound(id)),
+        }
     }
 
     pub async fn fetch_todos_like_title(&self, title: &str) -> Result<Vec<Todo>> {
