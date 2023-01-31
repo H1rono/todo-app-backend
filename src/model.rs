@@ -12,7 +12,7 @@ mod update;
 
 pub type TimeStamp = DateTime<Utc>;
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::FromRow)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Todo {
     pub id: u32,
     pub title: String,
