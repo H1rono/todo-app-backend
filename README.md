@@ -1,5 +1,7 @@
 # todo-app-backend
 
+[![on-push-CI](https://github.com/H1rono/todo-app-backend/actions/workflows/on-push.yml/badge.svg)](https://github.com/H1rono/todo-app-backend/actions/workflows/on-push.yml)
+
 server side implementation of my todo app
 
 ## dependencies
