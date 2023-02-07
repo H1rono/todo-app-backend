@@ -10,7 +10,7 @@ server side implementation of my todo app
     - runs in Docker
 - Rust
     - runs in both Docker and host machine
-    - cargo
+    - cargo crates
         - [`anyhow`](https://docs.rs/anyhow/latest/anyhow/)
         - [`tokio`](https://docs.rs/tokio/latest/tokio/)
         - [`sqlx`](https://docs.rs/sqlx/latest/sqlx/)
@@ -21,18 +21,29 @@ server side implementation of my todo app
         - [`tower`](https://docs.rs/tower/latest/tower/)
         - [`serde`](https://docs.rs/serde/latest/serde/)
         - [`serde_json`](https://docs.rs/serde_json/latest/serde_json/)
-- [Taskfile](https://taskfile.dev/)
+    - cargo tools
+        - [rustfmt](https://github.com/rust-lang/rustfmt)
+        - [clippy](https://github.com/rust-lang/rust-clippy)
+        - [cargo-make](https://github.com/sagiegurari/cargo-make)
 
 ## tasks
 
-see [`Taskfile.yml`](https://github.com/H1rono/todo-app-backend/blob/main/Taskfile.yml)
+see [`Makefile.toml`](https://github.com/H1rono/todo-app-backend/blob/main/Makefile.toml)
 
-- build: `task build`
-- development: `task dev`
-- development only MariaDB: `task dev-db`
-- (maybe) production: `task serve`
-- (maybe) production only MariaDB: `task serve-db`
-- ci of DB: `task ci-test`
-- ci of cargo: `task ci-cargo`
-- docker compose down: `task down`
-- docker compose --env-file .env.dev down: `task down-dev`
+- rustfmt: `format`
+- clippy: `lint`
+- docker compose down: `down_docker`, `down`
+- clean docker images: `clean_docker`
+- clean cargo: `clean_cargo`
+- clean all: `clean`
+- docker compose -f docker-compose.su.yml build`build_docker_db`
+- docker compose build: `build_docker`
+- build only cargo: `build_cargo`
+- build all: `build`
+- cargo test: `test`
+- dev only db`up_db`
+- dev cargo locally: `up_cargo`
+- dev all: `up`
+- emurate CI: `ci`
+- (maybe) production only db: `serve_db`
+- (maybe) production: `serve`
