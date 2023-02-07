@@ -41,7 +41,11 @@ impl Database {
         let pool = MySqlPool::connect(url)
             .await
             .with_context(|| format!("Failed to connect database {url}"))?;
-        Ok(Self { pool })
+        Ok(Self::new(pool))
+    }
+
+    pub fn new(pool: MySqlPool) -> Self {
+        Self { pool }
     }
 }
 
