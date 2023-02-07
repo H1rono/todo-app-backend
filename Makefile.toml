@@ -15,7 +15,8 @@ script = "docker compose down --remove-orphans"
 [tasks.down]
 alias = "down_docker"
 
-[tasks.clean_docker]  # https://qiita.com/suin/items/19d65e191b96a0079417
+[tasks.clean_docker]
+# https://qiita.com/suin/items/19d65e191b96a0079417
 script = "docker compose down --rmi all --remove-orphans"
 dependencies = ["down_docker"]
 
@@ -36,22 +37,28 @@ command = "cargo"
 args = ["test"]
 dependencies = ["build"]
 
-[tasks.load_env_dev]
-script = "source .env.dev"
-
-[tasks.load_env]
-script = "source .env"
-
 [tasks.up_db]
 script = "docker compose -f docker-compose.sub.yml --env-file .env.dev up -d"
 
 [tasks.up_cargo]
-command = "cargo"
-args = ["run"]
-dependencies = ["up_db", "load_env_dev"]
+env_files = [".env.dev"]
+script = "cargo run"
+dependencies = ["test"]
+[tasks.up_cargo.env]
+DATABASE_URL = { script = ["echo mysql://$MYSQL_USER:$MYSQL_PASSWORD@localhost:3306/$MYSQL_DATABASE"] }
 
 [tasks.up]
 script = "docker compose -f docker-compose.yml --env-file .env.dev up -d"
+
+[tasks.ci]
+dependencies = [
+    "up_db",
+    "test",
+    "clean"
+]
+
+[tasks.serve_db]
+command = "docker compose -f docker-compose.sub.yml --env-file .env up -d"
 
 [tasks.serve]  # maybe
 command = "docker compose -f docker-comopse.yml --env-file .env up -d"
