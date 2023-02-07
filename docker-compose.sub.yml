@@ -3,7 +3,7 @@ version: "3.9"
 services:
   database:
     build: ./db
-    image: todo-database-ci
+    image: todo-database-sub
     container_name: todo-database
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
