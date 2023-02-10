@@ -8,7 +8,6 @@ jobs:
     env:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: todo-app-database
-      DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
     services:
       database:
         image: mariadb:10.9.4
@@ -52,4 +51,6 @@ jobs:
           cargo install sqlx-cli
           cargo sqlx migrate run --source db/migrations
       - name: run test
+        env:
+          DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
         run: cargo test
