@@ -21,7 +21,7 @@ jobs:
           --health-cmd "mysqladmin ping"
           --health-interval 10s
           --health-timeout 5s
-          --retries: 5
+          --retries 5
     steps:
       - name: chekcout
         uses: actions/checkout@v3
