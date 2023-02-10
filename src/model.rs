@@ -55,12 +55,18 @@ pub enum DBError {
     MySqlError(anyhow::Error),
 }
 
-impl<E> From<E> for DBError
-where
-    E: Into<anyhow::Error>,
-{
-    fn from(value: E) -> Self {
-        DBError::MySqlError(value.into())
+impl From<anyhow::Error> for DBError {
+    fn from(value: anyhow::Error) -> Self {
+        DBError::MySqlError(value)
+    }
+}
+
+impl From<DBError> for anyhow::Error {
+    fn from(val: DBError) -> Self {
+        match val {
+            DBError::RowNotFound(id) => anyhow::anyhow!("Row Not found for id {id}"),
+            DBError::MySqlError(err) => err,
+        }
     }
 }
 
