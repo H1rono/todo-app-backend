@@ -3,15 +3,24 @@ on: [push]
 name: on-push-CI
 
 jobs:
-  docker_db:
-    runs-on: ubuntu-latest
-    steps:
-      - name: chekcout
-        uses: actions/checkout@v3
-      - name: setup docker-compose
-        run: docker compose -f docker-compose.sub.yml --env-file .env.dev up -d
   rust_check:
     runs-on: ubuntu-latest
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: todo-app-database
+    services:
+      database:
+        image: mariadb:10.9.4
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --retries: 5
     steps:
       - name: chekcout
         uses: actions/checkout@v3
