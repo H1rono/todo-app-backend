@@ -1,8 +1,5 @@
 .git*
-target
-db
 .env*
 .dockerignore
-docker-compose.yml
-docker-compose.sub.yml
+docker-compose*
 Dockerfile
