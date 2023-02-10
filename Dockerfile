@@ -11,4 +11,5 @@ RUN apt-get update && apt-get install -y wget \
 
 RUN cargo build
 
-CMD [ "dockerize", "-wait", "tcp://todo-database:3306", "'cargo run'" ]
+ENTRYPOINT [ "dockerize", "-wait", "tcp://todo-database:3306" ]
+CMD [ "cargo", "run" ]
