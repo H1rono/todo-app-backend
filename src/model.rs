@@ -10,6 +10,8 @@ mod fetch;
 mod insert;
 mod update;
 
+pub static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("db/migrations");
+
 pub type TimeStamp = DateTime<Utc>;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::FromRow)]
