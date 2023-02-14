@@ -46,17 +46,21 @@ dependencies = [
     "build_cargo"
 ]
 
-[tasks.test]
-command = "cargo"
-args = ["test"]
-dependencies = ["build_cargo"]
-
 [tasks.up_db]
 script = "docker compose -f docker-compose.sub.yml --env-file .env.dev up -d"
 
+[tasks.test]
+env_files = [".env.dev"]
+command = "cargo"
+args = ["test"]
+dependencies = ["build_cargo", "up_db"]
+[tasks.test.env]
+DATABASE_URL = { script = ["echo mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE"] }
+
 [tasks.up_cargo]
 env_files = [".env.dev"]
-script = "cargo run"
+command = "cargo"
+args = ["run"]
 dependencies = ["test"]
 [tasks.up_cargo.env]
 DATABASE_URL = { script = ["echo mysql://$MYSQL_USER:$MYSQL_PASSWORD@localhost:3306/$MYSQL_DATABASE"] }
