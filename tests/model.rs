@@ -1,10 +1,10 @@
 #[cfg(test)]
-mod model {
+mod model_test {
     use anyhow::Result;
 
     use todo_app_backend::model::*;
 
-    #[sqlx::test(migrations = "db/migrations")]
+    #[sqlx::test(migrator = "MIGRATOR")]
     async fn fetch_test(pool: sqlx::MySqlPool) -> Result<()> {
         let db = Database::new(pool);
         let todos = db.fetch_all_todos().await?;
