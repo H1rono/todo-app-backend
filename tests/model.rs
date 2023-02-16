@@ -9,18 +9,21 @@ mod model_test {
         ("todo 2", "", "2023-01-01T01:00:00Z", true),
     ];
 
+    fn gen_partial_todos() -> Result<Vec<PartialTodo>> {
+        SAMPLE_PARTIAL_TODOS
+            .into_iter()
+            .map(|p_todo| p_todo.try_into())
+            .collect::<Result<Vec<PartialTodo>>>()
+    }
+
     #[sqlx::test(migrator = "MIGRATOR")]
     async fn insert_test(pool: sqlx::MySqlPool) -> Result<()> {
         let db = Database::new(pool);
-        let mut i = 0;
-        for p_todo in SAMPLE_PARTIAL_TODOS {
-            i = db.insert_partial_todo(&p_todo.try_into().unwrap()).await?;
-        }
-        if i as usize != SAMPLE_PARTIAL_TODOS.len() {
-            return Err(anyhow!(
-                "id is mismatch: expected {i}, got {}",
-                SAMPLE_PARTIAL_TODOS.len()
-            ));
+        for (i, p_todo) in gen_partial_todos()?.iter().enumerate() {
+            let j = db.insert_partial_todo(p_todo).await?;
+            if (i + 1) as u32 != j {
+                return Err(anyhow!("mismatch in id: expected {}, got {}", i + 1, j));
+            }
         }
         Ok(())
     }
@@ -29,7 +32,30 @@ mod model_test {
     async fn fetch_test(pool: sqlx::MySqlPool) -> Result<()> {
         let db = Database::new(pool);
         let todos = db.fetch_all_todos().await?;
-        assert_eq!(todos.len(), 0);
+        if !todos.is_empty() {
+            return Err(anyhow!(
+                "there should be no todos in database, but found: {todos:?}"
+            ));
+        }
+        let p_todos = gen_partial_todos()?;
+        for p_todo in p_todos.iter() {
+            db.insert_partial_todo(p_todo).await?;
+        }
+        let todos = db.fetch_all_todos().await?;
+        if p_todos.len() != todos.len() {
+            return Err(anyhow!("inserted {p_todos:?}, but fetched {todos:?}"));
+        }
+        for todo in &todos {
+            let t = db.fetch_todo_by_id(todo.id).await?;
+            if todo != &t {
+                return Err(anyhow!(
+                    "mismatch todo in id {}: {:?} and {:?}",
+                    todo.id,
+                    &t,
+                    todo
+                ));
+            }
+        }
         Ok(())
     }
 }
