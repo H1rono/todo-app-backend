@@ -47,7 +47,7 @@ dependencies = [
 ]
 
 [tasks.up_db]
-script = "docker compose -f docker-compose.sub.yml --env-file .env.dev up -d"
+script = "docker compose -f docker-compose.sub.yml --env-file .env.dev up -d --wait"
 
 [tasks.test]
 env_files = [".env.dev"]
@@ -76,7 +76,7 @@ dependencies = [
 ]
 
 [tasks.serve_db]
-command = "docker compose -f docker-compose.sub.yml --env-file .env up -d"
+command = "docker compose -f docker-compose.sub.yml --env-file .env up -d --wait"
 
 [tasks.serve]  # maybe
-command = "docker compose -f docker-comopse.yml --env-file .env up -d"
+command = "docker compose -f docker-comopse.yml --env-file .env up -d --wait"
