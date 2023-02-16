@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use sqlx::{
@@ -32,6 +34,32 @@ pub struct PartialTodo {
     pub note: String,
     pub due_to: TimeStamp,
     pub done: bool,
+}
+
+impl PartialTodo {
+    pub fn new(title: &str, note: &str, due_to: TimeStamp, done: bool) -> Self {
+        Self {
+            title: title.to_string(),
+            note: note.to_string(),
+            due_to,
+            done,
+        }
+    }
+}
+
+impl TryInto<PartialTodo> for (String, String, String, bool) {
+    type Error = anyhow::Error;
+    fn try_into(self) -> std::result::Result<PartialTodo, Self::Error> {
+        let (title, note, due_to, done) = self;
+        let due_to = TimeStamp::from_str(&due_to)
+            .with_context(|| format!("Failed to parse string '{due_to}' as timestamp"))?;
+        Ok(PartialTodo {
+            title,
+            note,
+            due_to,
+            done,
+        })
+    }
 }
 
 pub struct Database {
