@@ -35,23 +35,27 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
-      - name: rust-toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt, clippy
+      - name: install rust
+        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      - name: install rust toolchain
+        run: |
+          rustup component add rustfmt
+          rustup component add clippy
       - name: build
         run: CARGO_INCREMENTAL=1 cargo build --release --all-features
       - name: format
         run: cargo fmt --all -- --check
       - name: clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
-      - name: migrate
+      - name: install sqlx
+        uses: baptiste0928/cargo-install@v1
+        with:
+          crate: sqlx-cli
+          version: "=0.6"
+      - name: run migrate
         env:
           DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
-        run: |
-          cargo install sqlx-cli
-          cargo sqlx migrate run --source db/migrations
+        run: cargo sqlx migrate run --source db/migrations
       - name: run test
         env:
           DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
