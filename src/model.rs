@@ -62,6 +62,16 @@ impl TryInto<PartialTodo> for (String, String, String, bool) {
     }
 }
 
+impl TryInto<PartialTodo> for (&str, &str, &str, bool) {
+    type Error = anyhow::Error;
+    fn try_into(self) -> std::result::Result<PartialTodo, Self::Error> {
+        let (title, note, due_to, done) = self;
+        let due_to = TimeStamp::from_str(due_to)
+            .with_context(|| format!("Failed to parse string '{due_to}' as timestamp"))?;
+        Ok(PartialTodo::new(title, note, due_to, done))
+    }
+}
+
 pub struct Database {
     pool: MySqlPool,
 }
