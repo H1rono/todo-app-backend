@@ -41,21 +41,36 @@ mod model_test {
         for p_todo in p_todos.iter() {
             db.insert_partial_todo(p_todo).await?;
         }
+        // fetch_all
         let todos = db.fetch_all_todos().await?;
         if p_todos.len() != todos.len() {
-            return Err(anyhow!("inserted {p_todos:?}, but fetched {todos:?}"));
+            return Err(anyhow!(
+                "inserted {} PartialTodo(s), but fetched {} Todo(s)",
+                p_todos.len(),
+                todos.len()
+            ));
         }
-        for todo in &todos {
-            let t = db.fetch_todo_by_id(todo.id).await?;
-            if todo != &t {
-                return Err(anyhow!(
-                    "mismatch todo in id {}: {:?} and {:?}",
-                    todo.id,
-                    &t,
-                    todo
-                ));
+        for (p_todo, todo) in p_todos.iter().zip(todos.into_iter()) {
+            let pt: PartialTodo = todo.into();
+            if p_todo != &pt {
+                return Err(anyhow!("mismatch todo: {p_todo:?} and {pt:?}"));
             }
         }
+        // fetch_by_id
+        for (i, p_todo) in p_todos.iter().enumerate() {
+            let id = (i + 1) as u32;
+            let todo = db.fetch_todo_by_id(id).await?;
+            let pt: PartialTodo = todo.into();
+            if p_todo != &pt {
+                return Err(anyhow!("mismatch todo: {p_todo:?} and {pt:?}"));
+            }
+        }
+        match db.fetch_todo_by_id((p_todos.len() + 10) as u32).await {
+            Err(DBError::RowNotFound(_)) => Ok(()),
+            x => Err(anyhow!(
+                "unexpected result {x:?} of fetch by the id that is out of range"
+            )),
+        }?;
         Ok(())
     }
 }
