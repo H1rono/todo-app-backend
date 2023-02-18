@@ -35,13 +35,14 @@ impl PartialTodo {
     }
 }
 
-impl TryInto<PartialTodo> for (String, String, String, bool) {
+impl TryFrom<(String, String, String, bool)> for PartialTodo {
     type Error = anyhow::Error;
-    fn try_into(self) -> std::result::Result<PartialTodo, Self::Error> {
-        let (title, note, due_to, done) = self;
+    fn try_from(
+        (title, note, due_to, done): (String, String, String, bool),
+    ) -> std::result::Result<Self, Self::Error> {
         let due_to = TimeStamp::from_str(&due_to)
             .with_context(|| format!("Failed to parse string '{due_to}' as timestamp"))?;
-        Ok(PartialTodo {
+        Ok(Self {
             title,
             note,
             due_to,
@@ -50,10 +51,11 @@ impl TryInto<PartialTodo> for (String, String, String, bool) {
     }
 }
 
-impl TryInto<PartialTodo> for (&str, &str, &str, bool) {
+impl TryFrom<(&str, &str, &str, bool)> for PartialTodo {
     type Error = anyhow::Error;
-    fn try_into(self) -> std::result::Result<PartialTodo, Self::Error> {
-        let (title, note, due_to, done) = self;
+    fn try_from(
+        (title, note, due_to, done): (&str, &str, &str, bool),
+    ) -> std::result::Result<Self, Self::Error> {
         let due_to = TimeStamp::from_str(due_to)
             .with_context(|| format!("Failed to parse string '{due_to}' as timestamp"))?;
         Ok(PartialTodo::new(title, note, due_to, done))
