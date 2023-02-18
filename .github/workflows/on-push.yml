@@ -35,8 +35,6 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
-      - name: install rust
-        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
       - name: install rust toolchain
         run: |
           rustup component add rustfmt
@@ -51,7 +49,7 @@ jobs:
         uses: baptiste0928/cargo-install@v1
         with:
           crate: sqlx-cli
-          version: "=0.6"
+          version: "^0.6"
       - name: run migrate
         env:
           DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
