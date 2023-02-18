@@ -16,18 +16,6 @@ pub static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("db/migrations");
 
 pub type TimeStamp = DateTime<Utc>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::FromRow)]
-pub struct Todo {
-    pub id: u32,
-    pub title: String,
-    pub note: String,
-    pub due_to: TimeStamp,
-    pub done: i8,
-    pub created_at: TimeStamp,
-    pub updated_at: TimeStamp,
-    pub deleted_at: Option<TimeStamp>,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PartialTodo {
     pub title: String,
@@ -69,6 +57,29 @@ impl TryInto<PartialTodo> for (&str, &str, &str, bool) {
         let due_to = TimeStamp::from_str(due_to)
             .with_context(|| format!("Failed to parse string '{due_to}' as timestamp"))?;
         Ok(PartialTodo::new(title, note, due_to, done))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, sqlx::FromRow)]
+pub struct Todo {
+    pub id: u32,
+    pub title: String,
+    pub note: String,
+    pub due_to: TimeStamp,
+    pub done: i8,
+    pub created_at: TimeStamp,
+    pub updated_at: TimeStamp,
+    pub deleted_at: Option<TimeStamp>,
+}
+
+impl From<Todo> for PartialTodo {
+    fn from(val: Todo) -> Self {
+        Self {
+            title: val.title,
+            note: val.note,
+            due_to: val.due_to,
+            done: val.done != 0,
+        }
     }
 }
 
