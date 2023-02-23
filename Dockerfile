@@ -1,4 +1,4 @@
-FROM rust:1.66-buster
+FROM rust:1.67-buster
 
 WORKDIR /usr/src/todo-app-backend
 COPY . .
