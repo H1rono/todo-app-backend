@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{error, fmt, str::FromStr};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
@@ -108,18 +108,21 @@ pub enum DBError {
     MySqlError(anyhow::Error),
 }
 
-impl From<anyhow::Error> for DBError {
-    fn from(value: anyhow::Error) -> Self {
-        DBError::MySqlError(value)
+impl fmt::Display for DBError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use DBError::*;
+        match self {
+            RowNotFound(i) => write!(f, "no row found with id = {i}"),
+            MySqlError(e) => write!(f, "MySql error: {e}"),
+        }
     }
 }
 
-impl From<DBError> for anyhow::Error {
-    fn from(val: DBError) -> Self {
-        match val {
-            DBError::RowNotFound(id) => anyhow::anyhow!("Row Not found for id {id}"),
-            DBError::MySqlError(err) => err,
-        }
+impl error::Error for DBError {}
+
+impl From<anyhow::Error> for DBError {
+    fn from(value: anyhow::Error) -> Self {
+        DBError::MySqlError(value)
     }
 }
 
