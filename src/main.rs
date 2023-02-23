@@ -3,7 +3,7 @@ use std::net::SocketAddr;
 
 use anyhow::{Context, Result};
 
-use todo_app_backend::{model::Database, route::make_router};
+use todo_app_backend::{model::Database, router::make_router};
 
 #[tokio::main]
 async fn main() -> Result<()> {
