@@ -5,6 +5,7 @@ use axum::{routing, Router};
 use crate::model::Database;
 
 mod get;
+mod post;
 
 pub struct App {
     pub db: Database,
@@ -32,5 +33,6 @@ pub fn make_router(db: Database) -> Router {
     Router::new()
         .route("/todos", routing::get(get::get_all_todos))
         .route("/todos/:id", routing::get(get::get_todo_by_id))
+        .route("/todos", routing::post(post::post_todo))
         .with_state(Arc::new(app))
 }
