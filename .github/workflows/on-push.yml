@@ -2,12 +2,15 @@ on: [push]
 
 name: on-push-CI
 
+env:
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: todo-app-database
+
 jobs:
   rust_check:
     runs-on: ubuntu-latest
     env:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: todo-app-database
+      DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
     services:
       database:
         image: mariadb:10.9.4
@@ -51,10 +54,6 @@ jobs:
           crate: sqlx-cli
           version: "^0.6"
       - name: run migrate
-        env:
-          DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
         run: cargo sqlx migrate run --source db/migrations
       - name: run test
-        env:
-          DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
         run: cargo test
