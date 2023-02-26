@@ -1,6 +1,6 @@
 use anyhow::Context;
 
-use super::{Database, Result, TimeStamp, Todo};
+use super::{Database, PartialTodo, Result, TimeStamp, Todo};
 
 impl Database {
     pub async fn update_todo_col_title(&self, id: u32, value: &str) -> Result<Todo> {
@@ -71,6 +71,24 @@ impl Database {
             .with_context(|| {
                 format!("Failed to UPDATE a row where id = {id} with deleted_at = {value}")
             })?;
+        self.fetch_todo_by_id(id).await
+    }
+
+    pub async fn update_todo_partial(&self, id: u32, value: PartialTodo) -> Result<Todo> {
+        let _ = self.fetch_todo_by_id(id).await?;
+        sqlx::query(
+            "UPDATE `todos` SET `title` = ?, `note` = ?, `due_to` = ?, `done` = ? WHERE `id` = ?",
+        )
+        .bind(&value.title)
+        .bind(&value.note)
+        .bind(value.due_to)
+        .bind(value.done as i8)
+        .bind(id)
+        .execute(&self.pool)
+        .await
+        .with_context(|| {
+            format!("Failed to UPDATE a row where id = {id} with partial todo {value:?}")
+        })?;
         self.fetch_todo_by_id(id).await
     }
 }
