@@ -1,11 +1,13 @@
-use std::sync::Arc;
+use std::{error, fmt, sync::Arc};
 
-use axum::{routing, Router};
+use axum::{response::IntoResponse, routing, Router};
+use hyper::StatusCode;
 
-use crate::model::Database;
+use crate::model::{DBError, Database};
 
 mod delete;
 mod get;
+mod patch;
 mod post;
 
 pub struct App {
@@ -20,6 +22,36 @@ impl App {
     pub async fn connect(url: &str) -> anyhow::Result<Self> {
         let db = Database::connect(url).await?;
         Ok(Self { db })
+    }
+}
+
+#[derive(Debug)]
+pub enum AppError {
+    DBErr(DBError),
+}
+
+impl fmt::Display for AppError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::DBErr(err) => write!(f, "{err}"),
+        }
+    }
+}
+
+impl error::Error for AppError {}
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> axum::response::Response {
+        match self {
+            Self::DBErr(DBError::MySqlError(_)) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Something went wrong while communicating with database",
+            )
+                .into_response(),
+            Self::DBErr(DBError::RowNotFound(i)) => {
+                (StatusCode::NOT_FOUND, format!("no todo found for id = {i}")).into_response()
+            }
+        }
     }
 }
 
