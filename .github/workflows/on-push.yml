@@ -9,8 +9,6 @@ env:
 jobs:
   rust_check:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: mysql://root:${{ env.MYSQL_ROOT_PASSWORD }}@localhost:3306/${{ env.MYSQL_DATABASE }}
     services:
       database:
         image: mariadb:10.9.4
@@ -48,6 +46,9 @@ jobs:
         run: cargo fmt --all -- --check
       - name: clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: update env
+        run: |
+          echo "DATABASE_URL=mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE" >> $GITHUB_ENV
       - name: install sqlx
         uses: baptiste0928/cargo-install@v1
         with:
