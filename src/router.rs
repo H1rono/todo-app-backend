@@ -4,6 +4,7 @@ use axum::{routing, Router};
 
 use crate::model::Database;
 
+mod delete;
 mod get;
 mod post;
 
@@ -34,5 +35,6 @@ pub fn make_router(db: Database) -> Router {
         .route("/todos", routing::get(get::get_all_todos))
         .route("/todos/:id", routing::get(get::get_todo_by_id))
         .route("/todos", routing::post(post::post_todo))
+        .route("/todos/:id", routing::delete(delete::delete_todo_by_id))
         .with_state(Arc::new(app))
 }
