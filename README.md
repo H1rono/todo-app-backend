@@ -13,12 +13,10 @@ server side implementation of my todo app
     - cargo crates
         - [`anyhow`](https://docs.rs/anyhow/latest/anyhow/)
         - [`tokio`](https://docs.rs/tokio/latest/tokio/)
-        - [`sqlx`](https://docs.rs/sqlx/latest/sqlx/)
-        - [`futures`](https://docs.rs/futures/latest/futures/)
         - [`chrono`](https://docs.rs/chrono/latest/chrono/)
+        - [`sqlx`](https://docs.rs/sqlx/latest/sqlx/)
         - [`axum`](https://docs.rs/axum/latest/axum/)
         - [`hyper`](https://docs.rs/hyper/latest/hyper/)
-        - [`tower`](https://docs.rs/tower/latest/tower/)
         - [`serde`](https://docs.rs/serde/latest/serde/)
         - [`serde_json`](https://docs.rs/serde_json/latest/serde_json/)
     - cargo tools
