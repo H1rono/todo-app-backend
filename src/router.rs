@@ -68,5 +68,6 @@ pub fn make_router(db: Database) -> Router {
         .route("/todos/:id", routing::get(get::get_todo_by_id))
         .route("/todos", routing::post(post::post_todo))
         .route("/todos/:id", routing::delete(delete::delete_todo_by_id))
+        .route("/todos/:id", routing::patch(patch::patch_todo))
         .with_state(Arc::new(app))
 }
