@@ -5,6 +5,7 @@ name: on-push-CI
 env:
   MYSQL_ROOT_PASSWORD: root
   MYSQL_DATABASE: todo-app-database
+  CARGO_INCREMENTAL: 1
 
 jobs:
   rust_check:
@@ -41,7 +42,7 @@ jobs:
           rustup component add rustfmt
           rustup component add clippy
       - name: build
-        run: CARGO_INCREMENTAL=1 cargo build --release --all-features
+        run: cargo build --release --all-features
       - name: format
         run: cargo fmt --all -- --check
       - name: clippy
