@@ -17,15 +17,7 @@ pub struct PatchTodo {
     note: Option<String>,
     due_to: Option<TimeStamp>,
     done: Option<bool>,
-}
-
-fn merge_into_partial_todo(p_todo: PartialTodo, patch: PatchTodo) -> PartialTodo {
-    PartialTodo {
-        title: patch.title.unwrap_or(p_todo.title),
-        note: patch.note.unwrap_or(p_todo.note),
-        due_to: patch.due_to.unwrap_or(p_todo.due_to),
-        done: patch.done.unwrap_or(p_todo.done),
-    }
+    deleted: Option<bool>,
 }
 
 // PATCH /todos/:id
@@ -34,11 +26,29 @@ pub async fn patch_todo(
     Path(id): Path<u32>,
     Json(patch): Json<PatchTodo>,
 ) -> Result<(StatusCode, &'static str), AppError> {
+    let PatchTodo {
+        title,
+        note,
+        due_to,
+        done,
+        deleted,
+    } = patch;
     let todo = app.db.fetch_todo_by_id(id).await.map_err(AppError::DBErr)?;
-    let np = merge_into_partial_todo(todo.into(), patch);
+    let np = PartialTodo {
+        title: title.unwrap_or(todo.title),
+        note: note.unwrap_or(todo.note),
+        due_to: due_to.unwrap_or(todo.due_to),
+        done: done.unwrap_or(todo.done != 0),
+    };
     app.db
         .update_todo_partial(id, np)
         .await
         .map_err(AppError::DBErr)?;
+    if let Some(d) = deleted {
+        app.db
+            .update_todo_col_delete(id, d)
+            .await
+            .map_err(AppError::DBErr)?;
+    }
     Ok((StatusCode::OK, "todo updated"))
 }
