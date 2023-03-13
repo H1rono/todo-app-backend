@@ -28,6 +28,7 @@ fn merge_into_partial_todo(p_todo: PartialTodo, patch: PatchTodo) -> PartialTodo
     }
 }
 
+// PATCH /todos/:id
 pub async fn patch_todo(
     State(app): State<Arc<App>>,
     Path(id): Path<u32>,
