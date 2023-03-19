@@ -1,11 +1,18 @@
-on: [push]
-
 name: on-push-CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 env:
   MYSQL_ROOT_PASSWORD: root
   MYSQL_DATABASE: todo-app-database
   CARGO_INCREMENTAL: 1
+  SQLX_VERSION: "^0.6"
 
 jobs:
   rust_check:
@@ -27,20 +34,13 @@ jobs:
       - name: chekcout
         uses: actions/checkout@v3
       - name: cache build
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+        uses: Swatinem/rust-cache@v2
       - name: install rust toolchain
         run: |
           rustup component add rustfmt
           rustup component add clippy
+      - name: install sqlx
+        run: cargo install sqlx-cli@$SQLX_VERSION
       - name: build
         run: cargo build --release --all-features
       - name: format
@@ -48,13 +48,7 @@ jobs:
       - name: clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
       - name: update env
-        run: |
-          echo "DATABASE_URL=mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE" >> $GITHUB_ENV
-      - name: install sqlx
-        uses: baptiste0928/cargo-install@v1
-        with:
-          crate: sqlx-cli
-          version: "^0.6"
+        run: echo "DATABASE_URL=mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE" >> $GITHUB_ENV
       - name: run migrate
         run: cargo sqlx migrate run --source db/migrations
       - name: run test
