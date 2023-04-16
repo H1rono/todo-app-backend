@@ -63,7 +63,7 @@ impl IntoResponse for AppError {
 
 pub fn make_router(db: Database) -> Router {
     let app = App::new(db);
-    Router::new()
+    let api = Router::new()
         .route(
             "/todos",
             routing::get(get::get_all_todos).post(post::post_todo),
@@ -74,5 +74,6 @@ pub fn make_router(db: Database) -> Router {
                 .put(put::put_todo)
                 .delete(delete::delete_todo_by_id),
         )
-        .with_state(Arc::new(app))
+        .with_state(Arc::new(app));
+    Router::new().nest("/api", api)
 }
