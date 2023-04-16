@@ -7,8 +7,8 @@ use crate::model::{DBError, Database};
 
 mod delete;
 mod get;
-mod patch;
 mod post;
+mod put;
 
 pub struct App {
     pub db: Database,
@@ -58,7 +58,7 @@ impl IntoResponse for AppError {
 // GET /todos
 // GET /todos/:id
 // POST /todos
-// PATCH /todos/:id
+// PUT /todos/:id
 // DELETE /todos/:id
 
 pub fn make_router(db: Database) -> Router {
@@ -68,6 +68,6 @@ pub fn make_router(db: Database) -> Router {
         .route("/todos/:id", routing::get(get::get_todo_by_id))
         .route("/todos", routing::post(post::post_todo))
         .route("/todos/:id", routing::delete(delete::delete_todo_by_id))
-        .route("/todos/:id", routing::patch(patch::patch_todo))
+        .route("/todos/:id", routing::put(put::put_todo))
         .with_state(Arc::new(app))
 }

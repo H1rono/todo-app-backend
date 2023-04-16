@@ -12,7 +12,7 @@ use crate::model::{PartialTodo, TimeStamp};
 use super::{App, AppError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct PatchTodo {
+pub struct PutTodo {
     title: Option<String>,
     note: Option<String>,
     due_to: Option<TimeStamp>,
@@ -20,19 +20,19 @@ pub struct PatchTodo {
     deleted: Option<bool>,
 }
 
-// PATCH /todos/:id
-pub async fn patch_todo(
+// PUT /todos/:id
+pub async fn put_todo(
     State(app): State<Arc<App>>,
     Path(id): Path<u32>,
-    Json(patch): Json<PatchTodo>,
+    Json(put): Json<PutTodo>,
 ) -> Result<(StatusCode, &'static str), AppError> {
-    let PatchTodo {
+    let PutTodo {
         title,
         note,
         due_to,
         done,
         deleted,
-    } = patch;
+    } = put;
     let todo = app.db.fetch_todo_by_id(id).await.map_err(AppError::DBErr)?;
     let np = PartialTodo {
         title: title.unwrap_or(todo.title),
