@@ -38,7 +38,7 @@ pub async fn put_todo(
         title: title.unwrap_or(todo.title),
         note: note.unwrap_or(todo.note),
         due_to: due_to.unwrap_or(todo.due_to),
-        done: done.unwrap_or(todo.done != 0),
+        done: done.unwrap_or(todo.done),
     };
     app.db
         .update_todo_partial(id, np)

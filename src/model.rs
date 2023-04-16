@@ -68,7 +68,7 @@ pub struct Todo {
     pub title: String,
     pub note: String,
     pub due_to: TimeStamp,
-    pub done: i8,
+    pub done: bool,
     pub created_at: TimeStamp,
     pub updated_at: TimeStamp,
     pub deleted_at: Option<TimeStamp>,
@@ -80,7 +80,7 @@ impl From<Todo> for PartialTodo {
             title: val.title,
             note: val.note,
             due_to: val.due_to,
-            done: val.done != 0,
+            done: val.done,
         }
     }
 }

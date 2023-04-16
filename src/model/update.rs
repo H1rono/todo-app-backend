@@ -55,7 +55,7 @@ impl Database {
             .with_context(|| {
                 format!("Failed to UPDATE a row where id = {id} with done = {value}")
             })?;
-        todo.done = value as i8;
+        todo.done = value;
         Ok(todo)
     }
 
