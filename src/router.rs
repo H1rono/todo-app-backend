@@ -1,7 +1,8 @@
 use std::{error, fmt, sync::Arc};
 
-use axum::{response::IntoResponse, routing, Router};
+use axum::{http::HeaderValue, response::IntoResponse, routing, Router};
 use hyper::StatusCode;
+use tower_http::cors::{Any, CorsLayer};
 
 use crate::model::{DBError, Database};
 
@@ -61,7 +62,7 @@ impl IntoResponse for AppError {
 // PUT /todos/:id
 // DELETE /todos/:id
 
-pub fn make_router(db: Database) -> Router {
+pub fn make_router(db: Database, allowed_origin: HeaderValue) -> Router {
     let app = App::new(db);
     let api = Router::new()
         .route(
@@ -74,6 +75,12 @@ pub fn make_router(db: Database) -> Router {
                 .put(put::put_todo)
                 .delete(delete::delete_todo_by_id),
         )
-        .with_state(Arc::new(app));
+        .with_state(Arc::new(app))
+        .layer(
+            CorsLayer::new()
+                .allow_origin(allowed_origin)
+                .allow_methods(Any)
+                .allow_headers(Any),
+        );
     Router::new().nest("/api", api)
 }
