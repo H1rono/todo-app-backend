@@ -17,6 +17,7 @@ server side implementation of my todo app
         - [`sqlx`](https://docs.rs/sqlx/latest/sqlx/)
         - [`axum`](https://docs.rs/axum/latest/axum/)
         - [`hyper`](https://docs.rs/hyper/latest/hyper/)
+        - [`tower-http`](https://docs.rs/tower-http/latest/tower-http)
         - [`serde`](https://docs.rs/serde/latest/serde/)
         - [`serde_json`](https://docs.rs/serde_json/latest/serde_json/)
     - cargo tools
