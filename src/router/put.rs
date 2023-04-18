@@ -7,7 +7,7 @@ use axum::{
 use hyper::StatusCode;
 use serde::Deserialize;
 
-use crate::model::{PartialTodo, TimeStamp};
+use crate::model::{PartialTodo, TimeStamp, Todo};
 
 use super::{App, AppError};
 
@@ -24,15 +24,15 @@ pub struct PutTodo {
 pub async fn put_todo(
     State(app): State<Arc<App>>,
     Path(id): Path<u32>,
-    Json(put): Json<PutTodo>,
-) -> Result<(StatusCode, &'static str), AppError> {
+    Json(payload): Json<PutTodo>,
+) -> Result<(StatusCode, Json<Todo>), AppError> {
     let PutTodo {
         title,
         note,
         due_to,
         done,
         deleted,
-    } = put;
+    } = payload;
     let todo = app.db.fetch_todo_by_id(id).await.map_err(AppError::DBErr)?;
     let np = PartialTodo {
         title: title.unwrap_or(todo.title),
@@ -40,15 +40,17 @@ pub async fn put_todo(
         due_to: due_to.unwrap_or(todo.due_to),
         done: done.unwrap_or(todo.done),
     };
-    app.db
+    let mut todo = app
+        .db
         .update_todo_partial(id, np)
         .await
         .map_err(AppError::DBErr)?;
     if let Some(d) = deleted {
-        app.db
+        todo = app
+            .db
             .update_todo_col_delete(id, d)
             .await
             .map_err(AppError::DBErr)?;
     }
-    Ok((StatusCode::OK, "todo updated"))
+    Ok((StatusCode::OK, Json(todo)))
 }
