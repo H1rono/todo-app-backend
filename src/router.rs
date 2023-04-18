@@ -8,8 +8,8 @@ use crate::model::{DBError, Database};
 
 mod delete;
 mod get;
+mod patch;
 mod post;
-mod put;
 
 pub struct App {
     pub db: Database,
@@ -72,7 +72,7 @@ pub fn make_router(db: Database, allowed_origin: HeaderValue) -> Router {
         .route(
             "/todos/:id",
             routing::get(get::get_todo_by_id)
-                .put(put::put_todo)
+                .patch(patch::patch_todo)
                 .delete(delete::delete_todo_by_id),
         )
         .with_state(Arc::new(app))
