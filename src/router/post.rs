@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{extract::State, Json};
 use hyper::StatusCode;
 
-use crate::model::PartialTodo;
+use crate::model::{PartialTodo, Todo};
 
 use super::{App, AppError};
 
@@ -12,10 +12,12 @@ use super::{App, AppError};
 pub async fn post_todo(
     State(app): State<Arc<App>>,
     Json(payload): Json<PartialTodo>,
-) -> Result<StatusCode, AppError> {
-    app.db
+) -> Result<(StatusCode, Json<Todo>), AppError> {
+    let id = app
+        .db
         .insert_partial_todo(&payload)
         .await
         .map_err(AppError::DBErr)?;
-    Ok(StatusCode::NO_CONTENT)
+    let todo = app.db.fetch_todo_by_id(id).await.map_err(AppError::DBErr)?;
+    Ok((StatusCode::CREATED, Json(todo)))
 }
