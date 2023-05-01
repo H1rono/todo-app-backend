@@ -31,11 +31,11 @@ see [`Makefile.toml`](https://github.com/H1rono/todo-app-backend/blob/main/Makef
 
 - rustfmt: `format`
 - clippy: `lint`
-- docker compose down: `down_docker`, `down`
-- clean docker images: `clean_docker`
+- docker compose down: `down_docker_db`, `down_docker`, `down`
+- clean docker images: `clean_docker_db`, `clean_docker`
 - clean cargo: `clean_cargo`
 - clean all: `clean`
-- docker compose -f docker-compose.su.yml build`build_docker_db`
+- docker compose -f db/docker-compose.yml build: `build_docker_db`
 - docker compose build: `build_docker`
 - build only cargo: `build_cargo`
 - build all: `build`
