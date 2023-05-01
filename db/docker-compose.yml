@@ -2,9 +2,9 @@ version: "3.9"
 
 services:
   database:
-    build: ./db
+    build: .
     image: todo-database-sub
-    container_name: todo-database
+    container_name: todo-database-sub
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_USER=${MYSQL_USER}
