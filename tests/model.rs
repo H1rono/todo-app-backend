@@ -29,7 +29,7 @@ mod model_test {
     }
 
     #[sqlx::test(migrator = "MIGRATOR")]
-    async fn fetch_test(pool: sqlx::MySqlPool) -> Result<()> {
+    async fn initial_fetch_empty_test(pool: sqlx::MySqlPool) -> Result<()> {
         let db = Database::new(pool);
         let todos = db.fetch_all_todos().await?;
         if !todos.is_empty() {
@@ -37,11 +37,21 @@ mod model_test {
                 "there should be no todos in database, but found: {todos:?}"
             ));
         }
-        let p_todos = gen_partial_todos()?;
-        for p_todo in p_todos.iter() {
+        Ok(())
+    }
+
+    async fn insert_todos(db: &Database) -> Result<()> {
+        for p_todo in gen_partial_todos()?.iter() {
             db.insert_partial_todo(p_todo).await?;
         }
-        // fetch_all
+        Ok(())
+    }
+
+    #[sqlx::test(migrator = "MIGRATOR")]
+    async fn fetch_all_test(pool: sqlx::MySqlPool) -> Result<()> {
+        let db = Database::new(pool);
+        let p_todos = gen_partial_todos()?;
+        insert_todos(&db).await?;
         let todos = db.fetch_all_todos().await?;
         if p_todos.len() != todos.len() {
             return Err(anyhow!(
@@ -56,7 +66,14 @@ mod model_test {
                 return Err(anyhow!("mismatch todo: {p_todo:?} and {pt:?}"));
             }
         }
-        // fetch_by_id
+        Ok(())
+    }
+
+    #[sqlx::test(migrator = "MIGRATOR")]
+    async fn fetch_by_id_test(pool: sqlx::MySqlPool) -> Result<()> {
+        let db = Database::new(pool);
+        let p_todos = gen_partial_todos()?;
+        insert_todos(&db).await?;
         for (i, p_todo) in p_todos.iter().enumerate() {
             let id = (i + 1) as u32;
             let todo = db.fetch_todo_by_id(id).await?;
@@ -70,7 +87,6 @@ mod model_test {
             x => Err(anyhow!(
                 "unexpected result {x:?} of fetch by the id that is out of range"
             )),
-        }?;
-        Ok(())
+        }
     }
 }
