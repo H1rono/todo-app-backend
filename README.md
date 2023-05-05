@@ -1,6 +1,6 @@
 # todo-app-backend
 
-[![on-push-CI](https://github.com/H1rono/todo-app-backend/actions/workflows/on-push.yml/badge.svg)](https://github.com/H1rono/todo-app-backend/actions/workflows/on-push.yml)
+[![on-push-CI](https://github.com/H1rono/todo-app-backend/actions/workflows/on-push.yml/badge.svg)](https://github.com/H1rono/todo-app-backend/actions/workflows/on-push.yml) [![codecov](https://codecov.io/github/H1rono/todo-app-backend/branch/main/graph/badge.svg?token=LGXD96Q1L5)](https://codecov.io/github/H1rono/todo-app-backend)
 
 server side implementation of my todo app
 
