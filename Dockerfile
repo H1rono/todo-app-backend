@@ -1,8 +1,12 @@
-FROM rust:1.67-buster
+FROM rust:1.67-bullseye as builder
 
 WORKDIR /usr/src/todo-app-backend
 COPY . .
 
-RUN cargo build
+RUN cargo build --release
 
-CMD [ "cargo", "run" ]
+FROM debian:bullseye-slim
+
+COPY --from=builder /usr/src/todo-app-backend/target/release/todo-app-backend /usr/local/bin/todo-app-backend
+
+CMD ["/usr/local/bin/todo-app-backend"]
