@@ -69,13 +69,13 @@ pub fn make_router(db: Database, allowed_origin: HeaderValue) -> Router {
     let api = Router::new()
         .route(
             "/todos",
-            routing::get(get::get_all_todos).post(post::post_todo),
+            routing::get(App::get_all_todos).post(App::post_todo),
         )
         .route(
             "/todos/:id",
-            routing::get(get::get_todo_by_id)
-                .patch(patch::patch_todo)
-                .delete(delete::delete_todo_by_id),
+            routing::get(App::get_todo_by_id)
+                .patch(App::patch_todo)
+                .delete(App::delete_todo_by_id),
         )
         .with_state(Arc::new(app))
         .layer(
