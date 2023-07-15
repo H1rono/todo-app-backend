@@ -9,7 +9,7 @@ use serde::Deserialize;
 
 use crate::model::{PartialTodo, TimeStamp, Todo};
 
-use super::{App, AppError};
+use super::{App, AppError, Result};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct PatchTodo {
@@ -25,7 +25,7 @@ pub async fn patch_todo(
     State(app): State<Arc<App>>,
     Path(id): Path<u32>,
     Json(payload): Json<PatchTodo>,
-) -> Result<(StatusCode, Json<Todo>), AppError> {
+) -> Result<(StatusCode, Json<Todo>)> {
     let PatchTodo {
         title,
         note,

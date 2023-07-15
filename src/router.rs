@@ -56,6 +56,8 @@ impl IntoResponse for AppError {
     }
 }
 
+type Result<T, E = AppError> = std::result::Result<T, E>;
+
 // GET /todos
 // GET /todos/:id
 // POST /todos

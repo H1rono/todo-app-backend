@@ -5,14 +5,14 @@ use hyper::StatusCode;
 
 use crate::model::{PartialTodo, Todo};
 
-use super::{App, AppError};
+use super::{App, AppError, Result};
 
 /// POST /todos
 /// body: Json<PartialTodo>
 pub async fn post_todo(
     State(app): State<Arc<App>>,
     Json(payload): Json<PartialTodo>,
-) -> Result<(StatusCode, Json<Todo>), AppError> {
+) -> Result<(StatusCode, Json<Todo>)> {
     let id = app
         .db
         .insert_partial_todo(&payload)
