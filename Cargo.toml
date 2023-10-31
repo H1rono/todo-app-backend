@@ -9,7 +9,7 @@ rust-version = "1.67"
 
 [dependencies]
 anyhow = "1.0"
-tokio = { version = "1.32", features = ["full"] }
+tokio = { version = "1.33", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
 sqlx = { version = "0.7", features = [
     "mysql",
