@@ -22,8 +22,8 @@
           rustc = toolchain;
           cargo = toolchain;
         };
-        nativeBuildInputs = [ pkgs.libiconv ];
-        buildInputs = pkgs.lib.optionals pkgs.stdenvNoCC.isDarwin [ pkgs.darwin.Security ];
+        nativeBuildInputs = with pkgs; [ pkg-config libiconv ];
+        buildInputs = [ pkgs.openssl ] ++ pkgs.lib.optionals pkgs.stdenvNoCC.isDarwin [ pkgs.darwin.Security ];
       in
       {
         devShells.default = pkgs.mkShell {

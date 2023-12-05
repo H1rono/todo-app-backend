@@ -3,3 +3,6 @@
 .dockerignore
 docker-compose*
 Dockerfile
+.direnv
+result
+target

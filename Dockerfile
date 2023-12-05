@@ -1,12 +1,27 @@
-FROM rust:1.67-bullseye as builder
+# ref: https://marcopolo.io/code/nix-and-small-containers/
+FROM nixpkgs/nix-flakes:latest AS builder
 
-WORKDIR /usr/src/todo-app-backend
+WORKDIR /app
+
+ENV NIX_CONFIG='filter-syscalls = false'
+
+COPY flake.nix .
+COPY flake.lock .
+RUN nix build . || true
+
 COPY . .
 
-RUN cargo build --release
+RUN nix build .
 
-FROM debian:bullseye-slim
+RUN mkdir /tmp/nix-store-closure
+RUN cp -R $(nix-store -qR result/) /tmp/nix-store-closure
 
-COPY --from=builder /usr/src/todo-app-backend/target/release/todo-app-backend /usr/local/bin/todo-app-backend
+ENTRYPOINT [ "/bin/sh" ]
 
-CMD ["/usr/local/bin/todo-app-backend"]
+FROM scratch
+WORKDIR /app
+
+COPY --from=builder /tmp/nix-store-closure /nix/store
+COPY --from=builder /app/result /app
+
+CMD ["/app/bin/todo-app-backend"]
