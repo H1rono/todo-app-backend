@@ -22,21 +22,34 @@
           rustc = toolchain;
           cargo = toolchain;
         };
-        nativeBuildInputs = with pkgs; [ pkg-config libiconv ];
-        buildInputs = [ pkgs.openssl ] ++ pkgs.lib.optionals pkgs.stdenvNoCC.isDarwin [ pkgs.darwin.Security ];
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          name = "todo-app-backend";
-          packages = [ toolchain ] ++ nativeBuildInputs ++ buildInputs;
-        };
-        packages.default = rustPlatform.buildRustPackage {
+        nativeBuildInputs = with pkgs; [ pkg-config ];
+        buildInputs = with pkgs; [ openssl libiconv ] ++ lib.optionals stdenvNoCC.isDarwin [ darwin.Security ];
+        defaultBuildArgs = {
           pname = "todo-app-backend";
           version = "0.1.0";
           src = ./.;
           cargoLock.lockFile = ./Cargo.lock;
           inherit nativeBuildInputs buildInputs;
           doCheck = false;
+        };
+        buildRustPackage = attrs: rustPlatform.buildRustPackage (defaultBuildArgs // attrs);
+      in
+      {
+        devShells.default = pkgs.stdenvNoCC.mkDerivation {
+          name = "todo-app-backend";
+          nativeBuildInputs = nativeBuildInputs ++ [ toolchain pkgs.cargo-make pkgs.sqlx-cli ];
+          inherit buildInputs;
+        };
+        packages = {
+          default = buildRustPackage { };
+          with-check = buildRustPackage {
+            checkPhase = ''
+              cargo fmt --all -- --check
+              cargo clippy --all-targets --all-features -- -D warnings
+              cargo test --no-run
+            '';
+            doCheck = true;
+          };
         };
       }
     );
