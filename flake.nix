@@ -36,9 +36,9 @@
         buildRustPackage = attrs: rustPlatform.buildRustPackage (defaultBuildArgs // attrs);
       in
       {
-        devShells.default = pkgs.stdenvNoCC.mkDerivation {
+        devShells.default = pkgs.stdenv.mkDerivation {
           name = "todo-app-backend";
-          nativeBuildInputs = nativeBuildInputs ++ [ toolchain pkgs.cargo-make pkgs.sqlx-cli ];
+          nativeBuildInputs = with pkgs; nativeBuildInputs ++ [ toolchain cargo-make sqlx-cli grcov ];
           inherit buildInputs;
         };
         packages = {
