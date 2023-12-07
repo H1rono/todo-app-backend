@@ -11,8 +11,6 @@ on:
 env:
   MYSQL_ROOT_PASSWORD: root
   MYSQL_DATABASE: todo-app-database
-  SQLX_VERSION: "^0.6"
-  GRCOV_VERSION: "0.8.13"
   RUSTFLAGS: "-C instrument-coverage"
   LLVM_PROFILE_FILE: "target/profile/%p-%m.profraw"
 
@@ -35,34 +33,27 @@ jobs:
     steps:
       - name: chekcout
         uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v20
+        with:
+          nix_path: "nixpkgs=channel:release-23.05"
+      - name: Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v2
       - name: cache build
         uses: Swatinem/rust-cache@v2
-      - name: install rust toolchain
-        run: |
-          rustup component add rustfmt
-          rustup component add clippy
-          rustup component add llvm-tools
-      - name: install sqlx
-        run: cargo install sqlx-cli@$SQLX_VERSION
       - name: build
-        run: cargo build --release --all-features
+        run: nix develop -c cargo build
       - name: format
-        run: cargo fmt --all -- --check
+        run: nix develop -c cargo fmt --all -- --check
       - name: clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: nix develop -c cargo clippy --all-targets --all-features -- -D warnings
       - name: update env
         run: echo "DATABASE_URL=mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE" >> $GITHUB_ENV
       - name: run migrate
-        run: cargo sqlx migrate run --source db/migrations
+        run: nix develop -c cargo sqlx migrate run --source db/migrations
       - name: run test
-        run: cargo test
-      - name: install grcov
-        run: |
-          curl -sSL -o grcov.tar.bz2 https://github.com/mozilla/grcov/releases/download/v${GRCOV_VERSION}/grcov-x86_64-unknown-linux-gnu.tar.bz2
-          tar -jxf grcov.tar.bz2
-          rm grcov.tar.bz2
+        run: nix develop -c cargo test
       - name: generate LCOV
-        run: ./grcov . -s . --binary-path ./target/debug/ -t lcov --branch --ignore-not-existing -o ./target/coverage.lcov
+        run: nix develop -c grcov . -s . --binary-path ./target/debug/ -t lcov --branch --ignore-not-existing -o ./target/coverage.lcov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
