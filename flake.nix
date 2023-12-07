@@ -31,6 +31,7 @@
           cargoLock.lockFile = ./Cargo.lock;
           inherit nativeBuildInputs buildInputs;
           doCheck = false;
+          buildType = "debug";
         };
         buildRustPackage = attrs: rustPlatform.buildRustPackage (defaultBuildArgs // attrs);
       in
@@ -49,6 +50,10 @@
               cargo test --no-run
             '';
             doCheck = true;
+            installPhase = ''
+              mkdir -p $out
+              mv ./target/* $out/
+            '';
           };
         };
       }
