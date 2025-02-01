@@ -9,7 +9,7 @@ rust-version = "1.67"
 
 [dependencies]
 anyhow = "1.0"
-tokio = { version = "1.42", features = ["full"] }
+tokio = { version = "1.43", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
 sqlx = { version = "0.8", features = ["mysql", "runtime-tokio-native-tls", "chrono", "migrate"] }
 axum = "0.7"
